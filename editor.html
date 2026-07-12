@@ -36,17 +36,6 @@
     overflow: hidden;
     background: var(--bg-color);
   }
-
-  #header {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 10;
-  }
-
   .logo {
     width: 24px;
     height: 24px;
@@ -69,8 +58,11 @@
   }
   .control-btn:hover { background: rgba(255,255,255,0.1); }
 
-  #monaco-container { flex: 1; position: relative; }
-
+#monaco-container {
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 14px; background: var(--bg-color); z-index: 20;
@@ -110,22 +102,6 @@
 <body>
 
 <div id="app-wrapper">
-  <div id="header">
-    <div class="logo">
-      <svg viewBox="0 0 24 24">
-        <path d="M4 5v14l4-4 4 4 4-4 4 4V5l-8 8-8-8z" />
-      </svg>
-    </div>
-    <div class="title-area">
-      Monster Executor<span class="badge">Editor</span>
-    </div>
-    <div class="window-controls">
-      <div class="control-btn" title="Copy Code" onclick="copyCode()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      </div>
-    </div>
-  </div>
-
   <div id="monaco-container">
     <div id="loading"><div class="spinner"></div><span>LOADING EDITOR...</span></div>
   </div>
