@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Monsetr</title>
+<title>Monster Executor</title>
 <style>
   :root {
     --bg-color: #000000;
@@ -56,7 +56,8 @@
     margin-right: 12px;
   }
 
-  .logo svg { fill: #fff; width: 18px; height: 18px; }
+  /* Styled M Logo */
+  .logo svg { fill: #fff; width: 20px; height: 20px; }
 
   .title-area { font-size: 12px; font-weight: 500; opacity: 0.8; display: flex; align-items: center; gap: 8px; }
   .badge { background: var(--accent-purple); color: white; font-size: 9px; padding: 1px 4px; border-radius: 2px; text-transform: uppercase; }
@@ -104,7 +105,6 @@
 
   #statusbar .item { display: flex; align-items: center; gap: 4px; }
   #statusbar .spacer { flex: 1; }
-  #statusbar #sb-problems { color: #f48771; }
 </style>
 </head>
 <body>
@@ -112,7 +112,9 @@
 <div id="app-wrapper">
   <div id="header">
     <div class="logo">
-      <svg viewBox="0 0 24 24"><path d="M3 5v14l9-5 9 5V5l-9 5-9-5z" /></svg>
+      <svg viewBox="0 0 24 24">
+        <path d="M4 5v14l4-4 4 4 4-4 4 4V5l-8 8-8-8z" />
+      </svg>
     </div>
     <div class="title-area">
       Monster Executor<span class="badge">Editor</span>
@@ -121,7 +123,6 @@
       <div class="control-btn" title="Copy Code" onclick="copyCode()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       </div>
-      <div class="control-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
     </div>
   </div>
 
@@ -138,7 +139,6 @@
     <div class="item"><span>🌙</span> Monster Executor</div>
     <div class="item" id="sb-cursor">Ln 1, Col 1</div>
     <div class="spacer"></div>
-    <div class="item" id="sb-problems">0 errors, 0 warnings</div>
   </div>
 </div>
 
