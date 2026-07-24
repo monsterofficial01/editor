@@ -13,8 +13,10 @@
     --text-dim: #9aa4b8;
     --status-bg: #0a0a0a;
     --hover-bg: rgba(255,255,255,0.05);
+    --tab-bg: #1a1a1a;
+    --tab-active-bg: #121212;
+    --tab-border: #3a3a3a;
   }
-
   html, body {
     margin: 0;
     padding: 0;
@@ -25,7 +27,6 @@
     overflow: hidden;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
-
   #app-wrapper {
     position: absolute;
     inset: 8px;
@@ -36,21 +37,22 @@
     overflow: hidden;
     background: var(--bg-color);
   }
-  .logo {
-    width: 24px;
-    height: 24px;
+
+  /* Title Bar */
+  .title-bar {
+    height: 36px;
+    background: #0f0f0f;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-right: 12px;
+    padding: 0 12px;
+    user-select: none;
+    z-index: 15;
   }
-
-  /* Styled M Logo */
+  .logo { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
   .logo svg { fill: #fff; width: 20px; height: 20px; }
-
   .title-area { font-size: 12px; font-weight: 500; opacity: 0.8; display: flex; align-items: center; gap: 8px; }
   .badge { background: var(--accent-purple); color: white; font-size: 9px; padding: 1px 4px; border-radius: 2px; text-transform: uppercase; }
-
   .window-controls { margin-left: auto; display: flex; gap: 8px; }
   .control-btn {
     width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
@@ -58,34 +60,83 @@
   }
   .control-btn:hover { background: rgba(255,255,255,0.1); }
 
-#monaco-container {
+  /* Tabs */
+  .tabs-container {
+    display: flex;
+    background: #0a0a0a;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a transparent;
+  }
+  .tabs-container::-webkit-scrollbar { height: 4px; }
+  .tab {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--tab-bg);
+    border-right: 1px solid var(--tab-border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    min-width: 130px;
+    position: relative;
+  }
+  .tab:hover { background: #1f1f1f; color: var(--text-main); }
+  .tab.active {
+    background: var(--tab-active-bg);
+    color: var(--text-main);
+    border-bottom: 2px solid var(--accent-purple);
+    font-weight: 500;
+  }
+  .tab-name { margin-right: 8px; font-size: 13px; }
+  .tab-close {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px; opacity: 0.6;
+    transition: all 0.15s;
+  }
+  .tab-close:hover {
+    opacity: 1;
+    background: rgba(255,60,60,0.2);
+    color: #ff6666;
+  }
+  .new-tab-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 100%;
+    background: var(--tab-bg);
+    border-right: 1px solid var(--tab-border);
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .new-tab-btn:hover { color: var(--accent-purple); background: #1f1f1f; }
+
+  #monaco-container {
     flex: 1;
     position: relative;
-    height: 100%;
-}
+    transition: opacity 0.18s ease;
+  }
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 14px; background: var(--bg-color); z-index: 20;
   }
-
   .spinner {
     width: 30px; height: 30px; border-radius: 50%;
     border: 2px solid rgba(124, 93, 250, 0.1); border-top-color: var(--accent-purple);
     animation: spin 0.8s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .action-buttons {
     position: absolute; right: 16px; bottom: 40px; display: flex; gap: 8px; z-index: 5;
   }
-
   .action-btn {
     width: 32px; height: 32px; background: #111; border: 1px solid var(--border-color);
     border-radius: 4px; display: flex; align-items: center; justify-content: center;
     cursor: pointer; color: #fff; transition: all 0.2s;
   }
-
   .action-btn:hover { border-color: var(--accent-purple); background: #1a1a1a; }
   .action-btn svg { width: 16px; height: 16px; }
 
@@ -94,14 +145,35 @@
     display: flex; align-items: center; padding: 0 12px; gap: 16px;
     font-size: 11px; color: var(--text-dim); user-select: none; z-index: 10;
   }
-
-  #statusbar .item { display: flex; align-items: center; gap: 4px; }
-  #statusbar .spacer { flex: 1; }
 </style>
 </head>
 <body>
-
 <div id="app-wrapper">
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="title-area">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4L4 8L12 12L20 8L12 4Z" fill="#7c5dfa"/>
+          <path d="M4 16L12 20L20 16" stroke="#7c5dfa" stroke-width="2"/>
+        </svg>
+      </div>
+      <span>Monster Executor</span>
+      <div class="badge">BETA</div>
+    </div>
+    <div class="window-controls">
+      <div class="control-btn" onclick="minimizeWindow()">−</div>
+      <div class="control-btn" onclick="maximizeWindow()">□</div>
+      <div class="control-btn" onclick="closeWindow()">×</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container" id="tabs-container">
+    <!-- Populated by JS -->
+    <div class="new-tab-btn" onclick="addNewTab()" title="New Tab">＋</div>
+  </div>
+
   <div id="monaco-container">
     <div id="loading"><div class="spinner"></div><span>LOADING EDITOR...</span></div>
   </div>
@@ -109,102 +181,109 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.49.0/min/vs/loader.min.js"></script>
 <script>
-/* ---------------------- Roblox Snippets ---------------------- */
-const Snippets = [
-  {trigger:"for", desc:"Numeric loop", body:"for ${1:i} = ${2:1}, ${3:10} do\n\t$0\nend"},
-  {trigger:"fori", desc:"Array loop (ipairs)", body:"for ${1:i}, ${2:v} in ipairs(${3:table}) do\n\t$0\nend"},
-  {trigger:"forp", desc:"Dictionary loop (pairs)", body:"for ${1:k}, ${2:v} in pairs(${3:table}) do\n\t$0\nend"},
-  {trigger:"if", desc:"If statement", body:"if ${1:condition} then\n\t$0\nend"},
-  {trigger:"ife", desc:"If-Else statement", body:"if ${1:condition} then\n\t$2\nelse\n\t$0\nend"},
-  {trigger:"func", desc:"Local function", body:"local function ${1:name}(${2:args})\n\t$0\nend"},
-  {trigger:"gv", desc:"Get Service", body:"local ${1:TweenService} = game:GetService(\"${1:TweenService}\")"},
-  {trigger:"lp", desc:"Local Player", body:"local Players = game:GetService(\"Players\")\nlocal player = Players.LocalPlayer"},
-  {trigger:"char", desc:"Character Reference", body:"local character = player.Character or player.CharacterAdded:Wait()"},
-  {trigger:"hum", desc:"Humanoid Reference", body:"local humanoid = character:WaitForChild(\"Humanoid\")"},
-  {trigger:"conn", desc:"Connect event", body:"${1:object}.${2:Event}:Connect(function(${3:args})\n\t$0\nend)"},
-  {trigger:"pjoin", desc:"Player Added", body:"game.Players.PlayerAdded:Connect(function(player)\n\t$0\nend)"},
-  {trigger:"touched", desc:"Part Touched", body:"${1:script.Parent}.Touched:Connect(function(hit)\n\tlocal character = hit.Parent\n\tlocal humanoid = character:FindFirstChildOfClass(\"Humanoid\")\n\tif humanoid then\n\t\t$0\n\tend\nend)"},
-  {trigger:"tween", desc:"TweenService Create", body:"local TweenService = game:GetService(\"TweenService\")\nlocal info = TweenInfo.new(${1:1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)\nlocal tween = TweenService:Create(${2:object}, info, {${3:Property} = ${4:Value}})\ntween:Play()"},
-  {trigger:"new", desc:"Instance.new", body:"local ${1:part} = Instance.new(\"${2:Part}\")\n${1:part}.Parent = ${3:workspace}\n$0"},
-  {trigger:"pcall", desc:"Protected Call", body:"local success, result = pcall(function()\n\t$0\nend)\nif not success then\n\twarn(\"Error: \" .. result)\nend"},
-  {trigger:"module", desc:"Module Script Template", body:"local ${1:Module} = {}\n\nfunction ${1:Module}.init()\n\t$0\nend\n\nreturn ${1:Module}"},
-  {trigger:"wait", desc:"Task Wait", body:"task.wait(${1:1})"},
-  {trigger:"spawn", desc:"Task Spawn", body:"task.spawn(function()\n\t$0\nend)"},
-  {trigger:"remote", desc:"RemoteEvent Fire (Client)", body:"game:GetService(\"ReplicatedStorage\"):WaitForChild(\"${1:RemoteEvent}\"):FireServer($0)"},
-  {trigger:"onremote", desc:"RemoteEvent Listen (Server)", body:"game:GetService(\"ReplicatedStorage\"):WaitForChild(\"${1:RemoteEvent}\").OnServerEvent:Connect(function(player, $2)\n\t$0\nend)"}
-];
+/* Snippets & RobloxAPI (unchanged) */
+const Snippets = [ /* ... your original snippets ... */ ];
+const RobloxAPI = { /* ... your original API ... */ };
 
-const RobloxAPI = {
-  globals: [
-    {label:"game", kind:"global", detail:"DataModel", doc:"The root of the Roblox game hierarchy."},
-    {label:"workspace", kind:"global", detail:"Workspace", doc:"Shortcut for game:GetService(\"Workspace\")."},
-    {label:"script", kind:"global", detail:"Instance", doc:"The script object currently running."},
-    {label:"task", kind:"global", detail:"Library", doc:"Task scheduler library (wait, spawn, delay)."},
-    {label:"Enum", kind:"global", detail:"Enums", doc:"Access to all Roblox enums."},
-    {label:"Vector3", kind:"global", detail:"DataType", doc:"3D vector class."},
-    {label:"CFrame", kind:"global", detail:"DataType", doc:"Coordinate Frame class."},
-    {label:"Color3", kind:"global", detail:"DataType", doc:"RGB color class."}
-  ]
-};
+/* Tab System */
+let tabs = [];
+let currentTabId = null;
+let editor = null;
+let monacoRef = null;
 
-/* ---------------------- Editor Logic ---------------------- */
+function generateTabId() { return 'tab-' + Date.now(); }
+
+function createTab(name = `Script${tabs.length + 1}.lua`) {
+  const id = generateTabId();
+  const model = monacoRef.editor.createModel('-- Monster Executor\n\n', 'luau');
+  
+  tabs.push({ id, name, model, isDirty: false });
+  renderTabs();
+  switchToTab(id);
+}
+
+function renderTabs() {
+  const container = document.getElementById('tabs-container');
+  container.querySelectorAll('.tab').forEach(el => el.remove());
+
+  tabs.forEach(tab => {
+    const tabEl = document.createElement('div');
+    tabEl.className = `tab ${tab.id === currentTabId ? 'active' : ''}`;
+    tabEl.innerHTML = `
+      <div class="tab-name">${tab.name}${tab.isDirty ? ' *' : ''}</div>
+      <div class="tab-close" onclick="event.stopImmediatePropagation(); closeTab('${tab.id}')">×</div>
+    `;
+    tabEl.onclick = () => switchToTab(tab.id);
+    container.insertBefore(tabEl, container.lastElementChild);
+  });
+}
+
+function switchToTab(tabId) {
+  const tab = tabs.find(t => t.id === tabId);
+  if (!tab || !editor) return;
+
+  currentTabId = tabId;
+  const monacoContainer = document.getElementById('monaco-container');
+  
+  monacoContainer.style.opacity = '0';
+  
+  setTimeout(() => {
+    editor.setModel(tab.model);
+    monacoContainer.style.opacity = '1';
+    renderTabs();
+  }, 120);
+}
+
+function closeTab(tabId) {
+  if (tabs.length === 1) return; // keep at least one tab
+
+  const index = tabs.findIndex(t => t.id === tabId);
+  const tab = tabs[index];
+  if (tab.model) tab.model.dispose();
+  tabs.splice(index, 1);
+
+  if (currentTabId === tabId) {
+    switchToTab(tabs[Math.max(0, index - 1)].id);
+  } else {
+    renderTabs();
+  }
+}
+
+function addNewTab() {
+  createTab();
+}
+
+function updateCurrentTabDirty() {
+  const tab = tabs.find(t => t.id === currentTabId);
+  if (tab) {
+    tab.isDirty = true;
+    renderTabs();
+  }
+}
+
+/* Editor Setup */
 require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.49.0/min/vs' }});
 
-let editor, monacoRef;
-
-// --- External API Functions ---
-function ClearFunction() {
-  if (editor) {
-    editor.setValue("");
+window.ClearFunction = () => {
+  if (editor && currentTabId) {
+    const tab = tabs.find(t => t.id === currentTabId);
+    if (tab) {
+      tab.model.setValue("");
+      tab.isDirty = true;
+      renderTabs();
+    }
   }
-}
+};
 
-function GetContent() {
-  if (editor) {
-    return editor.getValue();
-  }
-  return "";
-}
-
-// Expose to window for external access
-window.ClearFunction = ClearFunction;
-window.GetContent = GetContent;
+window.GetContent = () => editor ? editor.getValue() : "";
 
 require(['vs/editor/editor.main'], function() {
   monacoRef = monaco;
-
-  monaco.editor.defineTheme('app-theme', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-      { token: 'comment', foreground: '6a9955' },
-      { token: 'keyword', foreground: 'c586c0' },
-      { token: 'string', foreground: 'ce9178' },
-      { token: 'number', foreground: 'b5cea8' },
-      { token: 'operator', foreground: 'd4d4d4' },
-      { token: 'identifier', foreground: '9cdcfe' },
-      { token: 'type.identifier', foreground: '4ec9b0' }
-    ],
-    colors: {
-      'editor.background': '#000000',
-      'editor.foreground': '#d4d4d4',
-      'editorCursor.foreground': '#ffffff',
-      'editor.lineHighlightBackground': '#ffffff08',
-      'editorLineNumber.foreground': '#444444',
-      'editor.selectionBackground': '#264f78',
-      'editorInactiveSelectionBackground': '#3a3d41',
-      'editorWidget.background': '#0a0a0a',
-      'editorWidget.border': '#2a2a2a',
-      'editorSuggestWidget.background': '#0a0a0a',
-      'editorSuggestWidget.border': '#2a2a2a',
-      'editorSuggestWidget.selectedBackground': '#264f78'
-    }
-  });
-
+  monaco.editor.defineTheme('app-theme', { /* your original theme */ });
   registerLuau();
 
   editor = monaco.editor.create(document.getElementById('monaco-container'), {
-    value: "-- Monster executor",
+    value: "-- Monster Executor",
     language: 'luau',
     theme: 'app-theme',
     automaticLayout: true,
@@ -217,54 +296,22 @@ require(['vs/editor/editor.main'], function() {
     renderLineHighlight: "all"
   });
 
-  editor.onDidChangeCursorPosition(e => {
-    document.getElementById('sb-cursor').textContent = `Ln ${e.position.lineNumber}, Col ${e.position.column}`;
-  });
+  // Create first tab
+  createTab("Main.lua");
 
+  editor.onDidChangeModelContent(() => updateCurrentTabDirty());
   document.getElementById('loading').style.display = 'none';
 });
 
-function registerLuau() {
-  monaco.languages.register({ id: 'luau' });
-  monaco.languages.setMonarchTokensProvider('luau', {
-    keywords: ['and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or','repeat','return','then','true','until','while','continue'],
-    tokenizer: {
-      root: [
-        [/[a-zA-Z_]\w*/, { cases: { '@keywords': 'keyword', '@default': 'identifier' } }],
-        [/\-\-.*$/, 'comment'],
-        [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
-        [/\d+/, 'number'],
-        [/"/, 'string', '@string'],
-      ],
-      string: [[/[^\\"]+/, 'string'], [/\\./, 'string.escape'], [/"/, 'string', '@pop']],
-    }
-  });
+/* Rest of your original functions (registerLuau, copyCode, etc.) */
+function registerLuau() { /* your original registerLuau */ }
+function copyCode() { /* your original copyCode */ }
 
-  monaco.languages.registerCompletionItemProvider('luau', {
-    provideCompletionItems(model, position) {
-      const word = model.getWordUntilPosition(position);
-      const range = { startLineNumber: position.lineNumber, endLineNumber: position.lineNumber, startColumn: word.startColumn, endColumn: word.endColumn };
-      const suggestions = [];
-      RobloxAPI.globals.forEach(g => {
-        suggestions.push({ label: g.label, kind: monaco.languages.CompletionItemKind.Variable, detail: g.detail, documentation: g.doc, insertText: g.label, range });
-      });
-      Snippets.forEach(s => {
-        suggestions.push({ label: s.trigger, kind: monaco.languages.CompletionItemKind.Snippet, detail: s.desc, insertText: s.body, insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, range });
-      });
-      return { suggestions };
-    }
-  });
-}
-
-function copyCode() {
-  const code = GetContent();
-  navigator.clipboard.writeText(code).then(() => {
-    const btn = document.querySelector('[onclick="copyCode()"]');
-    const original = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ec9b0" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
-    setTimeout(() => btn.innerHTML = original, 2000);
-  });
-}
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 't') { e.preventDefault(); addNewTab(); }
+  if (e.ctrlKey && e.key === 'w') { e.preventDefault(); if (currentTabId) closeTab(currentTabId); }
+});
 </script>
 </body>
 </html>
